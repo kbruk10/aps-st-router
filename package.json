@@ -1,0 +1,15 @@
+{
+  "name": "aps-st-router",
+  "version": "1.0.0",
+  "description": "Routes SimpleTexting inbound messages to service-area numbers based on existing lists.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
