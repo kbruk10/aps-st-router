@@ -85,34 +85,28 @@ function extractKeyword(text) {
 
 // --- Webhook route ---
 // Handles BOTH GET and POST payloads from SimpleTexting
-app.post("/receivesms", async (req, res) => {
+app.post("/receivesms", async (req, res) => {  // ✅ add async here
   try {
-    const body = req.body || {};
-    console.log("Incoming webhook:", JSON.stringify(body, null, 2));
+    // … your parsing code above …
 
-    const v = body.values || {};
-    const from = v.contactPhone || body.contactPhone || body.from || body.phone;
-    const text = v.text || body.text || v.message || body.message || "";
+    // Build outbound message
+    const stamp = ctStamp();
+    const keyword = extractKeyword(text);
+    const truncatedMsg = text.slice(0, 160);
+    const outbound =
+      `APS Lead (${areaLabel}) — ${stamp} CT\n` +
+      `From: ${from}\n` +
+      (keyword ? `Keyword: ${keyword}\n` : "") +
+      `Msg: ${truncatedMsg}`;
 
-    if (!from || !text) {
-      console.log("Ignored event (missing from/text):", body);
-      return res.status(200).send("IGNORED");
-    }
+    await sendSMS(forwardTo, outbound);   // ✅ now legal
 
-    console.log(`📩 Message received from ${from}: ${text}`);
-
-    if (text.trim().toLowerCase().includes("north")) {
-      console.log("Triggering autoresponder for keyword:", text);
-      // Place your autoresponder send logic here
-    }
-
-    res.status(200).send("OK");
-  } catch (err) {
-    console.error("Error in /receivesms:", err);
-    res.status(200).send("IGNORED");
+    return res.status(200).send("OK");
+  } catch (e) {
+    console.error("receivesms error:", e);
+    return res.status(200).send("OK");
   }
 });
-
 
     // Determine list membership
     const listNames = Object.keys(LIST_TO_NUMBER);
