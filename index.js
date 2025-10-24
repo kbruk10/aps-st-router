@@ -116,6 +116,8 @@ app.post("/receivesms", async (req, res) => {
 
     // Determine list membership
     const listNames = Object.keys(LIST_TO_NUMBER);
+async function start() {
+
     const checks = await Promise.all(
       listNames.map(async (name) => ({ name, ok: await isMemberOfList(name, from) }))
     );
@@ -155,3 +157,6 @@ app.post("/receivesms", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`APS ST Router running on :${PORT}`));
+}
+
+start();
