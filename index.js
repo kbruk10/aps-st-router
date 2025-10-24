@@ -80,18 +80,34 @@ function extractKeyword(text) {
 
 // --- Webhook route ---
 // Handles BOTH GET and POST payloads from SimpleTexting
-app.all("/receivesms", async (req, res) => {
+app.post("/receivesms", async (req, res) => {
   try {
-    const data = req.method === "POST" ? (req.body || {}) : (req.query || {});
-    const from = (data.from || data.phone || "").toString();
-    const to   = (data.to   || "").toString();
-    const text = (data.text || data.message || "").toString();
+    const body = req.body || {};
+    console.log("Incoming webhook:", JSON.stringify(body, null, 2));
 
-    // Ignore non-incoming-SMS events or malformed payloads
+    const v = body.values || {};
+    const from = v.contactPhone || body.contactPhone || body.from || body.phone;
+    const text = v.text || body.text || v.message || body.message || "";
+
     if (!from || !text) {
-      console.log("Ignored event (missing from/text):", data);
+      console.log("Ignored event (missing from/text):", body);
       return res.status(200).send("IGNORED");
     }
+
+    console.log(`📩 Message received from ${from}: ${text}`);
+
+    if (text.trim().toLowerCase().includes("north")) {
+      console.log("Triggering autoresponder for keyword:", text);
+      // Place your autoresponder send logic here
+    }
+
+    res.status(200).send("OK");
+  } catch (err) {
+    console.error("Error in /receivesms:", err);
+    res.status(200).send("IGNORED");
+  }
+});
+
 
     // Determine list membership
     const listNames = Object.keys(LIST_TO_NUMBER);
