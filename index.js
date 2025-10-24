@@ -32,6 +32,11 @@ async function sendSMS(phone, message) {
   url.searchParams.set("phone", phone);
   url.searchParams.set("message", message);
 
+  async function main() {
+  // your existing startup code
+}
+main();
+
   const resp = await fetch(url, { method: "POST", headers: { accept: "application/json" } });
   let data = {};
   try { data = await resp.json(); } catch {}
